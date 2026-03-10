@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>CampusGo · Student Login</title>
+  <!-- Font Awesome 6 (free) for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(145deg, #0b2b44 0%, #123b5e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    /* main card – clean, subtle elevation */
+    .login-card {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 36px 36px 32px 32px;
+      box-shadow: 0 25px 50px -10px rgba(0, 20, 30, 0.4);
+      overflow: hidden;
+      padding: 2rem 1.8rem 2.2rem;
+      transition: transform 0.2s ease;
+    }
+
+    /* header with university branding hint */
+    .uni-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0.5rem;
+    }
+
+    .uni-badge {
+      background-color: #eaeef2;
+      border-radius: 40px;
+      padding: 0.3rem 1rem 0.3rem 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #1f4b6e;
+      letter-spacing: 0.3px;
+    }
+
+    .uni-badge i {
+      font-size: 0.9rem;
+      color: #c57f1e; /* accent gold */
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #0a1e2c;
+      margin-top: 0.75rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .welcome-sub {
+      font-size: 0.95rem;
+      color: #4a627a;
+      font-weight: 400;
+      margin-bottom: 2.2rem;
+      border-left: 3px solid #f0b341;
+      padding-left: 0.9rem;
+      background: #f9fcff;
+      border-radius: 0 8px 8px 0;
+      line-height: 1.4;
+    }
+
+    /* form */
+    .input-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: #2d4b65;
+      margin-bottom: 0.4rem;
+    }
+
+    .input-icon {
+      position: relative;
+    }
+
+    .input-icon i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a1b5c9;
+      font-size: 1rem;
+      transition: color 0.15s;
+    }
+
+    .input-icon input {
+      width: 100%;
+      padding: 0.9rem 1rem 0.9rem 2.8rem;
+      font-size: 1rem;
+      background-color: #f2f6fa;
+      border: 2px solid transparent;
+      border-radius: 24px;
+      outline: none;
+      transition: all 0.2s;
+      color: #0a1e2c;
+      font-weight: 500;
+    }
+
+    .input-icon input:focus {
+      border-color: #e9a23b;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(233, 162, 59, 0.15);
+    }
+
+    .input-icon input::placeholder {
+      color: #8da0b5;
+      font-weight: 400;
+      font-size: 0.95rem;
+    }
+
+    /* student ID hint */
+    .id-hint {
+      font-size: 0.75rem;
+      color: #5b748e;
+      margin-top: 0.4rem;
+      margin-left: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .id-hint i {
+      color: #f0b341;
+      font-size: 0.7rem;
+    }
+
+    /* password field + show toggle (simulated via js) */
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-pw {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #7b93aa;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .toggle-pw:hover {
+      color: #1f4b6e;
+    }
+
+    /* extras: forgot & checkbox row */
+    .row-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0.8rem 0 2rem;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.9rem;
+      color: #2c4056;
+      cursor: pointer;
+    }
+
+    .remember input[type="checkbox"] {
+      accent-color: #e9a23b;
+      width: 16px;
+      height: 16px;
+      margin: 0;
+    }
+
+    .forgot-link {
+      font-size: 0.9rem;
+      color: #1d6299;
+      font-weight: 500;
+      text-decoration: none;
+      border-bottom: 1px dashed #b1c9e0;
+    }
+
+    .forgot-link:hover {
+      color: #e9a23b;
+      border-bottom-color: #e9a23b;
+    }
+
+    /* primary button */
+    .login-btn {
+      background: #1f4b6e;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 1rem;
+      width: 100%;
+      border: none;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 12px 18px -10px #1f4b6e80;
+      margin-bottom: 1.8rem;
+    }
+
+    .login-btn i {
+      font-size: 1.1rem;
+      transition: transform 0.2s;
+    }
+
+    .login-btn:hover {
+      background: #123955;
+      box-shadow: 0 15px 22px -8px #0f2e44;
+    }
+
+    .login-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* register footer */
+    .register-footer {
+      text-align: center;
+      border-top: 1px solid #dbe2ea;
+      padding-top: 1.5rem;
+      font-size: 0.95rem;
+      color: #395d7c;
+    }
+
+    .register-footer a {
+      color: #c67c1e;
+      font-weight: 700;
+      text-decoration: none;
+      margin-left: 6px;
+      border-bottom: 2px solid #fad69c;
+    }
+
+    .register-footer a:hover {
+      border-bottom-color: #c67c1e;
+    }
+
+    /* simulated feedback message (javaScript will show) */
+    .toast-msg {
+      background: #e4edf5;
+      color: #14471c;
+      padding: 0.7rem 1rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 1.2rem;
+      border-left: 5px solid #34a853;
+      opacity: 0;
+      transition: opacity 0.25s;
+      pointer-events: none;
+    }
+
+    .toast-msg.show {
+      opacity: 1;
+    }
+
+    .toast-msg i {
+      font-size: 1.1rem;
+      color: #0f6922;
+    }
+
+    /* small spacing */
+    .spacer {
+      height: 0.2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <!-- University badge row -->
+    <div class="uni-header">
+      <span class="uni-badge">
+        <i class="fas fa-graduation-cap"></i> student · university.edu
+      </span>
+    </div>
+
+    <!-- Main heading -->
+    <h1>Welcome back</h1>
+    <div class="welcome-sub">
+      <i class="fas fa-bus" style="margin-right: 6px; color:#f0b341;"></i> 
+      Login with your Student ID to see your bus routes
+    </div>
+
+    <!-- Login form (no actual submit, but JS intercept) -->
+    <form id="loginForm" action="javascript:void(0);">
+      <!-- Student ID field -->
+      <div class="input-group">
+        <label for="studentId">Student ID</label>
+        <div class="input-icon">
+          <i class="fas fa-id-card"></i>
+          <input type="text" id="studentId" name="studentId" placeholder="e.g., @university.edu" value="jsmith@university.edu" autocomplete="off">
+        </div>
+        <div class="id-hint">
+          <i class="fas fa-info-circle"></i> use your full university email or ID
+        </div>
+      </div>
+
+      <!-- Password field with show/hide -->
+      <div class="input-group">
+        <label for="password">Password</label>
+        <div class="input-icon password-wrapper">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" name="password" placeholder="··········" value="12345678" autocomplete="off">
+          <button type="button" class="toggle-pw" id="togglePasswordBtn" aria-label="Show password">
+            <i class="far fa-eye" id="toggleIcon"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Remember me & forgot password -->
+      <div class="row-actions">
+        <label class="remember">
+          <input type="checkbox" checked> <span>Keep me logged in</span>
+        </label>
+        <a href="#" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <!-- Login button (main CTA) -->
+      <button type="submit" class="login-btn" id="loginBtn">
+        <span>Log in with Student ID</span>
+        <i class="fas fa-arrow-right"></i>
+      </button>
+    </form>
+
+    <!-- registration footer -->
+    <div class="register-footer">
+      <span>New student?</span>
+      <a href="#">Register with your Student ID</a>
+    </div>
+
+    <!-- hidden toast for demo feedback (simulated successful login) -->
+    <div id="loginToast" class="toast-msg">
+      <i class="fas fa-check-circle"></i>
+      <span id="toastText">Demo: logged in as student</span>
+    </div>
+  </div>
+
+  <!-- tiny JavaScript for toggle + demo login simulation -->
+  <script>
+    (function() {
+      // --- password show/hide toggle
+      const passwordInput = document.getElementById('password');
+      const toggleBtn = document.getElementById('togglePasswordBtn');
+      const toggleIcon = document.getElementById('toggleIcon');
+
+      if (toggleBtn && passwordInput) {
+        toggleBtn.addEventListener('click', function() {
+          const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+          passwordInput.setAttribute('type', type);
+          
+          // toggle eye / eye-slash
+          if (type === 'text') {
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+          } else {
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+          }
+        });
+      }
+
+      // --- login simulation (show toast message)
+      const loginForm = document.getElementById('loginForm');
+      const loginBtn = document.getElementById('loginBtn');
+      const toast = document.getElementById('loginToast');
+      const toastText = document.getElementById('toastText');
+
+      // function to show toast with custom message
+      function showToast(message, isSuccess = true) {
+        if (!toast) return;
+        toastText.innerText = message;
+        // success green left border, else red-ish (we keep success mostly)
+        if (!isSuccess) {
+          toast.style.borderLeftColor = '#c5221f';
+          toast.querySelector('i').style.color = '#b31412';
+        } else {
+          toast.style.borderLeftColor = '#34a853';
+          toast.querySelector('i').style.color = '#0f6922';
+        }
+        toast.classList.add('show');
+
+        // auto hide after 3 seconds
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3000);
+      }
+
+      if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+          e.preventDefault();  // already using javascript:void(0) but safe
+
+          // Get trimmed values for demo validation
+          const studentId = document.getElementById('studentId').value.trim();
+          const password = document.getElementById('password').value.trim();
+
+          // very simple demo validation (anything non-empty works)
+          if (studentId === '' || password === '') {
+            showToast('❌ Both fields are required', false);
+          } else if (!studentId.includes('@') && !studentId.match(/\d+/)) {
+            // arbitrary hint: if it doesn't look like email/ID, show warning but still proceed for demo.
+            showToast('⚠️ Demo accepts any ID — logging in as ' + studentId, true);
+          } else {
+            // success, simulate redirect / next screen
+            showToast('✅ Login successful! Redirecting to bus list...', true);
+            
+            // you could optionally disable button, but we keep it functional
+            loginBtn.disabled = true;
+            loginBtn.style.opacity = '0.7';
+            setTimeout(() => {
+              // re-enable for demo purposes, and remove toast
+              loginBtn.disabled = false;
+              loginBtn.style.opacity = '1';
+              toast.classList.remove('show');
+            }, 2800);
+          }
+        });
+      }
+
+      // additional: Forgot password link just shows a demo alert (nice to have)
+      const forgotLink = document.querySelector('.forgot-link');
+      if (forgotLink) {
+        forgotLink.addEventListener('click', function(ev) {
+          ev.preventDefault();
+          showToast('✉️ Password reset link would be sent (demo)', true);
+        });
+      }
+
+      // register link simulation
+      const registerLink = document.querySelector('.register-footer a');
+      if (registerLink) {
+        registerLink.addEventListener('click', function(ev) {
+          ev.preventDefault();
+          showToast('📝 Registration page (demo)', true);
+        });
+      }
+    })();
+  </script>
+  <!-- extra note: UI matches student ID login required, with appropriate campus feel -->
+</body>
+</html>
