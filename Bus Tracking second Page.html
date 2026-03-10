@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>CampusGo · Your Routes</title>
+  <!-- Font Awesome 6 (free) for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    /* main card – full-width mobile feel, but with comfort */
+    .routes-screen {
+      background-color: #ffffff;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 36px 36px 30px 30px;
+      box-shadow: 0 20px 40px -8px rgba(0, 35, 55, 0.2);
+      overflow: hidden;
+      padding: 1.4rem 1.2rem 2rem;
+      margin: 0.5rem 0;
+    }
+
+    /* ----- top bar with profile and stop selector ----- */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.8rem;
+    }
+
+    .top-bar h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0b2b44;
+      letter-spacing: -0.3px;
+    }
+
+    .profile-icon {
+      background: #e1e9f2;
+      border-radius: 40px;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1d4e75;
+      font-size: 1.3rem;
+      cursor: default;
+      transition: background 0.2s;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.03);
+    }
+
+    /* stop badge – tappable area */
+    .stop-badge {
+      background: #eef3fa;
+      border-radius: 60px;
+      padding: 0.6rem 1.2rem 0.6rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #0b2b44;
+      margin-bottom: 1.8rem;
+      border: 2px solid transparent;
+      transition: background 0.2s, border-color 0.2s;
+      cursor: pointer;
+      width: fit-content;
+    }
+
+    .stop-badge i {
+      color: #e68a2e;
+      font-size: 1.1rem;
+    }
+
+    .stop-badge:hover {
+      background: #e3eaf3;
+      border-color: #c99a5b;
+    }
+
+    .stop-badge:active {
+      transform: scale(0.98);
+    }
+
+    /* ----- primary status card (LEAVE NOW) ----- */
+    .primary-card {
+      background: linear-gradient(135deg, #163a54 0%, #1b4d6e 100%);
+      border-radius: 32px;
+      padding: 1.6rem 1.5rem;
+      margin-bottom: 2rem;
+      color: white;
+      box-shadow: 0 20px 25px -10px #0f3144;
+      border: 1px solid #4985af;
+    }
+
+    .primary-card .bus-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.2rem;
+    }
+
+    .primary-card .bus-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .bus-icon-blue {
+      background: #ffcd7e;
+      border-radius: 30px;
+      padding: 0.2rem 0.8rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1e3f59;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .bus-icon-blue i {
+      font-size: 0.8rem;
+      color: #ac6f1a;
+    }
+
+    /* leave now pill + timer row */
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.8rem;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .leave-pill {
+      background: #dc3626;
+      border-radius: 60px;
+      padding: 0.5rem 1.4rem;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: 0.5px;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 14px -4px #811f15;
+      border: 1px solid #ff8a75;
+      text-transform: uppercase;
+    }
+
+    .leave-pill i {
+      font-size: 1.2rem;
+    }
+
+    .countdown {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(2px);
+      padding: 0.35rem 1rem 0.35rem 0.9rem;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border: 1px solid #8db5d0;
+    }
+
+    .countdown i {
+      font-size: 1rem;
+      color: #fddc97;
+    }
+
+    .arrival-info {
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .arrival-info span {
+      font-weight: 800;
+      background: rgba(255,255,255,0.2);
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 1.6rem;
+    }
+
+    .subnote {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ----- other buses list (with pills) ----- */
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 1.5rem 0 0.8rem;
+    }
+
+    .section-label h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #1b405a;
+    }
+
+    .section-label span {
+      font-size: 0.85rem;
+      color: #657f9a;
+      background: #e1eaf2;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+    }
+
+    .bus-item {
+      background: #f7fafd;
+      border-radius: 24px;
+      padding: 1.2rem 1.2rem 1.2rem 1.5rem;
+      margin-bottom: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #dde5ed;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+
+    .bus-item:hover {
+      background: #ffffff;
+      border-color: #c5a26b;
+      box-shadow: 0 8px 15px -8px #a7b9ca;
+    }
+
+    .bus-item-left {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .bus-item-name {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #132e42;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bus-item-name i {
+      color: #f0a640;
+      font-size: 0.9rem;
+    }
+
+    .bus-item-detail {
+      font-size: 0.9rem;
+      color: #3d5e7b;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .bus-item-detail i {
+      font-size: 0.7rem;
+      color: #b38b54;
+    }
+
+    /* pill badges – status */
+    .pill {
+      border-radius: 60px;
+      padding: 0.3rem 1.2rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      border: 1px solid transparent;
+    }
+
+    .pill.later {
+      background: #ced9e5;
+      color: #1c3e58;
+      border-color: #a1b7cf;
+    }
+
+    .pill.beat-crowd {
+      background: #f3c94b;
+      color: #2c3f2c;
+      border-color: #dba52b;
+      font-weight: 800;
+    }
+
+    .pill.plan-ahead {
+      background: #b3d0e8;
+      color: #0e334b;
+      border-color: #628fb0;
+    }
+
+    .right-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .arrival-badge {
+      background: white;
+      border-radius: 40px;
+      padding: 0.2rem 0.8rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #0f2d41;
+      border: 1px solid #cbdae7;
+    }
+
+    /* delay banner */
+    .delay-banner {
+      background: #fef3e0;
+      border-left: 8px solid #dc7926;
+      border-radius: 18px;
+      padding: 0.8rem 1rem;
+      margin-top: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: #3a4f64;
+      font-weight: 500;
+      box-shadow: 0 3px 8px rgba(199, 118, 18, 0.1);
+    }
+
+    .delay-banner i {
+      color: #bd621b;
+      font-size: 1.2rem;
+    }
+
+    /* demo micro-interactions */
+    .toast-demo {
+      background: #e4edf5;
+      border-radius: 30px;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      color: #1f4b6e;
+      margin-top: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-left: 5px solid #3498db;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .toast-demo.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="routes-screen">
+    <!-- top bar: title & profile icon -->
+    <div class="top-bar">
+      <h2>Your Routes</h2>
+      <div class="profile-icon"><i class="fas fa-user-graduate"></i></div>
+    </div>
+
+    <!-- tappable selected stop -->
+    <div class="stop-badge" id="stopBadge" title="Tap to change stop (demo)">
+      <i class="fas fa-map-pin"></i> At <strong>Student Union North</strong>
+      <i class="fas fa-chevron-down" style="font-size: 0.75rem; opacity: 0.7;"></i>
+    </div>
+
+    <!-- PRIMARY STATUS CARD – BLUE ROUTE (LEAVE NOW) -->
+    <div class="primary-card">
+      <div class="bus-line">
+        <span class="bus-name">Blue Route</span>
+        <span class="bus-icon-blue"><i class="fas fa-location-dot"></i> Downtown</span>
+      </div>
+
+      <div class="status-row">
+        <div class="leave-pill">
+          <i class="fas fa-person-running"></i> LEAVE NOW
+        </div>
+        <!-- circular progress / countdown timer (visual only) -->
+        <div class="countdown">
+          <i class="far fa-clock"></i> 3 min
+        </div>
+      </div>
+
+      <div class="arrival-info">
+        Arrives in <span>3 mins</span> at your stop
+      </div>
+      <div class="subnote">
+        <i class="fas fa-bus"></i> next: 8:42, then 8:57
+      </div>
+    </div>
+
+    <!-- OTHER AVAILABLE BUSES section -->
+    <div class="section-label">
+      <h3>Other available buses</h3>
+      <span>updated 1m ago</span>
+    </div>
+
+    <!-- BUS 1: Green Route – LATER (grey) -->
+    <div class="bus-item" id="busGreen">
+      <div class="bus-item-left">
+        <div class="bus-item-name">
+          <i class="fas fa-leaf" style="color: #2b7d4f;"></i> Green Route · Campus North
+        </div>
+        <div class="bus-item-detail">
+          <i class="fas fa-signal"></i> Arrives in 15 mins · leave by 10:08 AM
+        </div>
+      </div>
+      <div class="right-content">
+        <div class="pill later">LATER</div>
+        <span class="arrival-badge"><i class="far fa-clock"></i> 15 min</span>
+      </div>
+    </div>
+
+    <!-- BUS 2: Orange Route – BEAT THE CROWD (yellow) -->
+    <div class="bus-item" id="busOrange">
+      <div class="bus-item-left">
+        <div class="bus-item-name">
+          <i class="fas fa-orange" style="color: #cf7f1a;"></i> Orange Route · Library
+        </div>
+        <div class="bus-item-detail">
+          <i class="fas fa-users"></i> Light crowd expected
+        </div>
+      </div>
+      <div class="right-content">
+        <div class="pill beat-crowd">BEAT THE CROWD</div>
+        <span class="arrival-badge"><i class="far fa-clock"></i> 8 min</span>
+      </div>
+    </div>
+
+    <!-- BUS 3: Night Shuttle – PLAN AHEAD (blue) -->
+    <div class="bus-item" id="busNight">
+      <div class="bus-item-left">
+        <div class="bus-item-name">
+          <i class="fas fa-moon" style="color: #405e79;"></i> Night Shuttle · West Campus
+        </div>
+        <div class="bus-item-detail">
+          <i class="fas fa-calendar-alt"></i> Next bus in 25 mins · schedule risk
+        </div>
+      </div>
+      <div class="right-content">
+        <div class="pill plan-ahead">PLAN AHEAD</div>
+        <span class="arrival-badge"><i class="far fa-clock"></i> 25 min</span>
+      </div>
+    </div>
+
+    <!-- PROACTIVE WARNING BANNER (delay info) -->
+    <div class="delay-banner">
+      <i class="fas fa-triangle-exclamation"></i>
+      Heads up: The 8:15 AM Blue Route is experiencing a 5‑minute delay.
+    </div>
+
+    <!-- demo toast for micro‑interactions (tap on any bus / stop) -->
+    <div id="demoToast" class="toast-demo">
+      <i class="fas fa-bus-simple"></i>
+      <span id="toastMessage">Demo: Bus details / stop change simulation</span>
+    </div>
+  </div>
+
+  <!-- simple JavaScript to show interactivity and demo the "Should I leave now?" concept -->
+  <script>
+    (function() {
+      const toast = document.getElementById('demoToast');
+      const toastMsg = document.getElementById('toastMessage');
+
+      function showDemoMessage(text, iconEmoji = '🔔') {
+        if (!toast || !toastMsg) return;
+        toastMsg.innerText = text;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2000);
+      }
+
+      // Stop badge click – change stop simulation
+      const stopBadge = document.getElementById('stopBadge');
+      if (stopBadge) {
+        stopBadge.addEventListener('click', function(e) {
+          e.preventDefault();
+          showDemoMessage('📍 Stop selector: you can change to Union West / Library etc.');
+        });
+      }
+
+      // Primary card (Blue Route) click – simulate "LEAVE NOW" detail
+      const primaryCard = document.querySelector('.primary-card');
+      if (primaryCard) {
+        primaryCard.addEventListener('click', function() {
+          showDemoMessage('🟦 Blue Route: real‑time tracking opens (leaves in 3 min)');
+        });
+      }
+
+      // Green Route (LATER)
+      const green = document.getElementById('busGreen');
+      if (green) {
+        green.addEventListener('click', function() {
+          showDemoMessage('🟩 Green route: 15 min away. Leave by 10:08 from your stop');
+        });
+      }
+
+      // Orange Route (BEAT THE CROWD)
+      const orange = document.getElementById('busOrange');
+      if (orange) {
+        orange.addEventListener('click', function() {
+          showDemoMessage('🟧 Orange: 8 min, light crowd – beat the rush!');
+        });
+      }
+
+      // Night Shuttle (PLAN AHEAD)
+      const night = document.getElementById('busNight');
+      if (night) {
+        night.addEventListener('click', function() {
+          showDemoMessage('🌙 Night shuttle: 25 min wait, check schedule before heading out');
+        });
+      }
+
+      // Delay banner click – extra info
+      const banner = document.querySelector('.delay-banner');
+      if (banner) {
+        banner.addEventListener('click', function() {
+          showDemoMessage('⏱️ Blue Route delay: now expected at 8:20 AM');
+        });
+      }
+
+      // profile icon just a friendly demo
+      const profile = document.querySelector('.profile-icon');
+      if (profile) {
+        profile.addEventListener('click', function() {
+          showDemoMessage('👤 Student profile & settings');
+        });
+      }
+
+      // small simulation that the pills also react (no double toast)
+      const pills = document.querySelectorAll('.pill');
+      pills.forEach(p => {
+        p.addEventListener('click', function(e) {
+          e.stopPropagation();  // avoid triggering parent bus item
+          let text = '';
+          if (p.classList.contains('later')) text = 'LATER: you have time';
+          else if (p.classList.contains('beat-crowd')) text = 'BEAT THE CROWD: moderate wait';
+          else if (p.classList.contains('plan-ahead')) text = 'PLAN AHEAD: long wait, plan accordingly';
+          else text = 'status pill';
+          showDemoMessage('🪪 ' + text);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
